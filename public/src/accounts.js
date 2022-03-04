@@ -12,25 +12,27 @@ function sortAccountsByLastName(accounts) {
 }
 
 function getTotalNumberOfBorrows(account, books) {
-  const accId = account.id
-  let total = 0
-  books.forEach(book => book.borrows.forEach(borrow => accId === borrow.id && total++))
-  return total
+  return books.reduce((accumulator, book) => {
+    return (accumulator + book.borrows.filter(borrow =>
+        borrow.id === account.id).reduce((accumulatorBorrows, borrow) =>
+      accumulatorBorrows + 1,0)
+    )
+  }, 0)
 }
 
 
 function getBooksPossessedByAccount(account, books, authors) {
-  let books_taken = [];
+  let booksTaken = []
   books.forEach(book=>{
      if (book.borrows.find(item=>item.id === account.id && !item.returned)) {
-      books_taken.push(book);
+      booksTaken.push(book)
     }
   })
-  books_taken.forEach(book=>{
-    const anAuthor = authors.find(person => person.id === book.authorId);
-    book['author'] = anAuthor;
+  booksTaken.forEach(book=>{
+    const anAuthor = authors.find(person => person.id === book.authorId)
+    book['author'] = anAuthor
   })
-  return books_taken;
+  return booksTaken
 }
 
 module.exports = {
