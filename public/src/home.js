@@ -1,3 +1,7 @@
+function sliceHelper (item){
+  return item.slice(0,5)
+}
+
 function getTotalBooksCount(books) {
   return books.length
 }
@@ -9,34 +13,33 @@ function getTotalAccountsCount(accounts) {
 function getBooksBorrowedCount(books) {
  const booksCheckedOut = books.filter(
   (book) => book.borrows.filter((record) => record.returned === false).length > 0
- );
+ )
  return booksCheckedOut.length
 }
-//first map out teh genres and assign that to a variable'
-//create an accumulator array
-//map the genres again to see if teh genre is already in the array
-// if the genre is in the array then the increase the count by one
-//if it isnt create an object with the genre name and initital value of 1
-//sort the object count value in order from greatest to least
-//cut the list off at 5 objects.
+
 function getMostCommonGenres(books) {
   const bookGenres = books.map((book) => book.genre)
-  const bookObject = []
+  const temp = []
+  //create a new array of the genres using the map function 
   bookGenres.map((genre) => {
-    const genreLocation = bookObject.findIndex((element) => element.name === genre)
+    //for each genre, first check to see if genre already exists in array
+    const genreLocation = temp.findIndex((element) => element.name === genre)
+    //If the genre exits increase the count by 1
     if (genreLocation >= 0) {
-      bookObject[genreLocation].count = bookObject[genreLocation].count + 1
+      //if the count is less than or equal to 0, create a count for the genre
+      temp[genreLocation].count = temp[genreLocation].count + 1
     } else {
-      bookObject.push({ name: genre, count: 1 })
+      //creating the array with genre and count
+      temp.push({ name: genre, count: 1 })
     }
   })
-  bookObject.sort((a, b) => b.count - a.count)
-  if (bookObject.length > 5) {
-    return bookObject.slice(0, 5)
+  //sorting it and cutting the array off at 5
+   temp.sort((a, b) => b.count - a.count)
+  if (temp.length > 5) {
+    return sliceHelper(temp)
   }
-  return bookObject
+  return temp
 }
-
 
 function getMostPopularBooks(books) {
  return books.map((book) => {
@@ -45,20 +48,20 @@ function getMostPopularBooks(books) {
 }
 
 function getMostPopularAuthors(books, authors) {
- let result = [];
+ let result = []
  authors.forEach((author) => {
   const theAuthor = {
    name: `${author.name.first} ${author.name.last}`,
    count: 0
-  };
+  }
   books.forEach((book) => {
    if (book.authorId === author.id) {
-    theAuthor.count += book.borrows.length;
+    theAuthor.count += book.borrows.length
    }
-  });
-  result.push(theAuthor);
- });
- return result.sort((a, b) => b.count - a.count).slice(0, 5);
+  })
+  result.push(theAuthor)
+ })
+ return sliceHelper(result.sort((a, b) => b.count - a.count))
 }
 
 module.exports = {
